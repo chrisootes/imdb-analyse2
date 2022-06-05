@@ -1,4 +1,5 @@
 import csv
+import datetime
 
 import streamlit as st
 import numpy as np
@@ -108,17 +109,23 @@ def get_titles() -> pd.DataFrame:
 df = get_titles()
 st.dataframe(df.head())
 
+st.text(f"Length before filter: {len(df)}")
+
+# filter input
 filter_year = st.slider('Minimal year', min_value=1950.0, max_value=2022.0, value=2018.0)
 filter_votes = st.slider('Minimal amount of votes', min_value=0.0, max_value=100000.0, value=20000.0)
 filter_ratings = st.slider('Average rating', min_value=0.0, max_value=10.0, value=7.0)
 #filter_type = st.selectbox('Title type', list(df['titleType'].unique()), index=4)
 
+# apply filters
 df = df[(df['parentStartYear'] >= filter_year) & (df['parentNumVotes'] > filter_votes) & (df['parentAverageRating'] > filter_ratings) & (df['titleType'] == "tvEpisode")]
 st.dataframe(df.head())
 
-st.text(f"Length: {len(df)}")
+st.text(f"Length after filter: {len(df)}")
 
-df = df.replace(to_replace={'startYear': np.NaN, 'endYear':  np.NaN}, value=2022.0)
+# upcoming releases are np.NaN, but move them to next year
+next_year = float(datetime.datetime.now().year+1)
+df = df.replace(to_replace={'startYear': np.NaN, 'endYear':  np.NaN}, value=next_year)
 st.dataframe(df.head())
 
 @st.cache(suppress_st_warning=True)
@@ -178,7 +185,7 @@ st.vega_lite_chart(
             'x': {
                 'field': 'episodes_start',
                 'type': 'quantitative',
-                "scale": {"domain": [filter_year, 2022]}
+                "scale": {"domain": [filter_year, next_year]}
             },
             'x2': {
                 'field': 'episodes_end',
@@ -202,6 +209,8 @@ st.vega_lite_chart(
                 {"field": "genres", "type": "nominal"},
                 {"field": "averageRating", "type": "nominal"},
                 {"field": "numVotes", "type": "nominal"},
+                {"field": "seasonNumber", "type": "nominal"},
+                {"field": "episodeNumber", "type": "nominal"},
             ]
         },
     },
