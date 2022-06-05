@@ -108,12 +108,15 @@ def get_titles() -> pd.DataFrame:
 df = get_titles()
 st.dataframe(df.head())
 
-filter_votes = st.slider('Minimal amount of votes', min_value=0.0, max_value=100000.0, value=50000.0)
-filter_ratings = st.slider('Average rating', min_value=0.0, max_value=10.0, value=8.0)
+filter_year = st.slider('Minimal year', min_value=1950.0, max_value=2022.0, value=2018.0)
+filter_votes = st.slider('Minimal amount of votes', min_value=0.0, max_value=100000.0, value=20000.0)
+filter_ratings = st.slider('Average rating', min_value=0.0, max_value=10.0, value=7.0)
 #filter_type = st.selectbox('Title type', list(df['titleType'].unique()), index=4)
 
-df = df[(df['parentNumVotes'] > filter_votes) & (df['parentAverageRating'] > filter_ratings) & (df['titleType'] == "tvEpisode")]
+df = df[(df['parentStartYear'] >= filter_year) & (df['parentNumVotes'] > filter_votes) & (df['parentAverageRating'] > filter_ratings) & (df['titleType'] == "tvEpisode")]
 st.dataframe(df.head())
+
+st.text(f"Length: {len(df)}")
 
 df = df.replace(to_replace={'startYear': np.NaN, 'endYear':  np.NaN}, value=2022.0)
 st.dataframe(df.head())
@@ -175,7 +178,7 @@ st.vega_lite_chart(
             'x': {
                 'field': 'episodes_start',
                 'type': 'quantitative',
-                "scale": {"domain": [1959, 2022]}
+                "scale": {"domain": [filter_year, 2022]}
             },
             'x2': {
                 'field': 'episodes_end',

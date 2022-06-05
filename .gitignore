@@ -1,1 +1,4 @@
 *.tsv
+*.gz
+.venv
+.vscode
