@@ -1,9 +1,10 @@
 # Analyse
-conda create -n streamlit
-conda activate streamlit
-conda install pip
-pip install streamlit pandas numpy
-streamlit run analyse.py
+## How to run
+* conda create -n streamlit
+* conda activate streamlit
+* conda install pip
+* pip install streamlit pandas numpy
+* streamlit run analyse.py
 
 ## Links
 * Streamlit api: https://docs.streamlit.io/en/stable/api.html
